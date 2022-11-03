@@ -2,10 +2,10 @@ package utils
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 //TodoPath returns the string path (OS agnostic) of the
@@ -20,22 +20,24 @@ func TodoPath(txtFile string) string {
 	return filepath.Join(homeDir, ".todo", txtFile)
 }
 
-//ReadFile prints the contexts of a file given its path.
-func ReadFile(path string) {
+//ReadFile prints the contents of a file given its path.
+func ReadFile(path string) string {
 	file, err := os.Open(path)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer file.Close()
 
+	var sb strings.Builder
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		fmt.Println(scanner.Text())
+		sb.WriteString(scanner.Text() + "\n")
 	}
 
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
+	return sb.String()
 }
 
 //ReadContexts returns a string array of the contexts in a given file.

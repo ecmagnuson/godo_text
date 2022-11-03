@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"godo/utils"
 
 	"github.com/spf13/cobra"
@@ -13,7 +14,7 @@ var lsCmd = &cobra.Command{
 	Long:  "list out all items in todo.txt",
 	Run: func(cmd *cobra.Command, args []string) {
 		var todoFile string = utils.TodoPath("todo.txt")
-		utils.ReadFile(todoFile)
+		fmt.Println(utils.ReadFile(todoFile))
 	},
 }
 
