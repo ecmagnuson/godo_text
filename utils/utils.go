@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 )
 
+//TodoPath returns the string path (OS agnostic) of the
+//todo.txt or done.txt in home/.todo/ dir.
 func TodoPath(txtFile string) string {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
@@ -18,6 +20,7 @@ func TodoPath(txtFile string) string {
 	return filepath.Join(homeDir, ".todo", txtFile)
 }
 
+//ReadFile prints the contexts of a file given its path.
 func ReadFile(path string) {
 	file, err := os.Open(path)
 	if err != nil {
@@ -33,4 +36,11 @@ func ReadFile(path string) {
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
+}
+
+//ReadContexts returns a string array of the contexts in a given file.
+func ReadContexts(path string) []string {
+	var contexts []string
+
+	return contexts
 }
