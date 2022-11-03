@@ -31,6 +31,9 @@ func ReadFile(path string) string {
 	var sb strings.Builder
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
+		if scanner.Text() == "" {
+			continue
+		}
 		sb.WriteString(scanner.Text() + "\n")
 	}
 
@@ -43,6 +46,5 @@ func ReadFile(path string) string {
 //ReadContexts returns a string array of the contexts in a given file.
 func ReadContexts(path string) []string {
 	var contexts []string
-
 	return contexts
 }
