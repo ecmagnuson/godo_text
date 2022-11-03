@@ -5,7 +5,7 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"todoGo/utils"
+	"godo/utils"
 
 	"github.com/spf13/cobra"
 )

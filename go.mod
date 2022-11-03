@@ -1,4 +1,4 @@
-module todoGo
+module godo
 
 go 1.18
 

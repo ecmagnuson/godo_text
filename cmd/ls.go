@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"todoGo/utils"
+	"godo/utils"
 
 	"github.com/spf13/cobra"
 )
