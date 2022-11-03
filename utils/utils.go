@@ -20,7 +20,7 @@ func TodoPath(txtFile string) string {
 	return filepath.Join(homeDir, ".todo", txtFile)
 }
 
-//ReadFile prints the contents of a file given its path.
+//ReadFile returns a string of the contents of a file given its path.
 func ReadFile(path string) string {
 	file, err := os.Open(path)
 	if err != nil {
