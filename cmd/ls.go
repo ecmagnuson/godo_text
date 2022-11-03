@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// lsCmd represents the lsd command
 var lsCmd = &cobra.Command{
 	Use:   "ls",
 	Short: "list out all items in todo.txt",
