@@ -5,6 +5,7 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"fmt"
 	"godo/utils"
 
 	"github.com/spf13/cobra"
@@ -17,7 +18,7 @@ var lsdCmd = &cobra.Command{
 	Long:  "list items in done.txt",
 	Run: func(cmd *cobra.Command, args []string) {
 		var todoFile string = utils.TodoPath("done.txt")
-		utils.ReadFile(todoFile)
+		fmt.Println(utils.ReadFile(todoFile))
 	},
 }
 
