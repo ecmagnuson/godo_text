@@ -6,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"golang.org/x/exp/slices"
 )
 
 //TodoPath returns the string path (OS agnostic) of the
@@ -44,7 +46,16 @@ func ReadFile(path string) string {
 }
 
 //ReadContexts returns a string array of the contexts in a given file.
-func ReadContexts(path string) []string {
+func ReadContexts(path string) string {
 	var contexts []string
-	return contexts
+	var todos string = ReadFile(TodoPath("todo.txt"))
+	scanner := bufio.NewScanner(strings.NewReader(todos))
+	for scanner.Scan() {
+		var line string = scanner.Text()
+		line = line[strings.IndexByte(line, '@'):]
+		if !slices.Contains(contexts, line) {
+			contexts = append(contexts, line)
+		}
+	}
+	return strings.Join(contexts, " ")
 }
