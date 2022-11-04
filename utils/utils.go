@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"golang.org/x/exp/slices"
@@ -32,11 +33,13 @@ func ReadFile(path string) string {
 
 	var sb strings.Builder
 	scanner := bufio.NewScanner(file)
+	i := -1
 	for scanner.Scan() {
+		i++
 		if scanner.Text() == "" {
 			continue
 		}
-		sb.WriteString(scanner.Text() + "\n")
+		sb.WriteString("(" + strconv.Itoa(i) + ") " + scanner.Text() + "\n")
 	}
 
 	if err := scanner.Err(); err != nil {
