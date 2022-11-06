@@ -12,9 +12,6 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-//TODO:
-//Panic when no context given in add
-
 //TodoPath returns the string path (OS agnostic) of the
 //todo.txt or done.txt in home/.todo/ dir.
 func TodoPath(txtFile string) string {
