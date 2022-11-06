@@ -94,6 +94,10 @@ func GetContexts(path string) string {
 	return strings.Join(contexts, " ")
 }
 
+func hasContext(text string) bool {
+	return strings.Contains(text, "@")
+}
+
 //WriteFile writes text to a file.
 func WriteFile(filePath string, text []string) {
 	f, err := os.OpenFile(filePath, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
@@ -104,6 +108,9 @@ func WriteFile(filePath string, text []string) {
 	defer f.Close()
 
 	if len(text) > 0 {
+		if !hasContext(strings.Join(text, " ")) {
+			log.Fatal("todo item must have context.")
+		}
 		if _, err = f.WriteString(strings.Join(text, " ") + "\n"); err != nil {
 			panic(err)
 		}
@@ -114,6 +121,10 @@ func WriteFile(filePath string, text []string) {
 			next, _ := reader.ReadString('\n')
 			if next == "\n" {
 				break
+			}
+			if !hasContext(next) {
+				fmt.Println("todo item must have context.")
+				continue
 			}
 			text = append(text, next)
 		}
