@@ -2,6 +2,7 @@ package utils
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -61,4 +62,35 @@ func ReadContexts(path string) string {
 		}
 	}
 	return strings.Join(contexts, " ")
+}
+
+//WriteFile writes text to a file
+func WriteFile(filePath string, text []string) {
+	f, err := os.OpenFile(filePath, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+	if err != nil {
+		panic(err)
+	}
+
+	defer f.Close()
+
+	if len(text) > 0 {
+		if _, err = f.WriteString(strings.Join(text, " ") + "\n"); err != nil {
+			panic(err)
+		}
+	} else {
+		reader := bufio.NewReader(os.Stdin)
+		for {
+			fmt.Print("> ")
+			next, _ := reader.ReadString('\n')
+			if next == "\n" {
+				break
+			}
+			text = append(text, next)
+		}
+		for i := 0; i < len(text); i++ {
+			if _, err = f.WriteString(text[i]); err != nil {
+				panic(err)
+			}
+		}
+	}
 }
