@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"godo/utils"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -14,7 +15,11 @@ var lsCmd = &cobra.Command{
 	Long:  "list out all items in todo.txt",
 	Run: func(cmd *cobra.Command, args []string) {
 		var todoFile string = utils.TodoPath("todo.txt")
-		fmt.Println(utils.ReadFile(todoFile))
+		if len(args) == 0 {
+			fmt.Println(utils.ReadFile(todoFile))
+		} else {
+			fmt.Println(utils.ReadContext(todoFile, strings.Join(args, " ")))
+		}
 	},
 }
 
@@ -29,5 +34,6 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// lsCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	//lsCmd.Flags().BoolP("toggle", "@", false, "Help message for toggle")
+	//lsCmd.MarkFlagRequired("toggle")
 }

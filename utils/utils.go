@@ -12,6 +12,9 @@ import (
 	"golang.org/x/exp/slices"
 )
 
+//TODO:
+//Panic when no context given in add
+
 //TodoPath returns the string path (OS agnostic) of the
 //todo.txt or done.txt in home/.todo/ dir.
 func TodoPath(txtFile string) string {
@@ -24,7 +27,7 @@ func TodoPath(txtFile string) string {
 	return filepath.Join(homeDir, ".todo", txtFile)
 }
 
-//ReadFile returns a string of the contents of a file given its path.
+//ReadFile returns a string of all of the contents of a file given its path.
 func ReadFile(path string) string {
 	file, err := os.Open(path)
 	if err != nil {
@@ -34,13 +37,41 @@ func ReadFile(path string) string {
 
 	var sb strings.Builder
 	scanner := bufio.NewScanner(file)
-	i := -1
+	i := -1 //TODO: fix this
 	for scanner.Scan() {
 		i++
 		if scanner.Text() == "" {
 			continue
 		}
 		sb.WriteString("(" + strconv.Itoa(i) + ") " + scanner.Text() + "\n")
+	}
+
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
+	return sb.String()
+}
+
+//ReadContext reads only specific contexts from a file.
+func ReadContext(path string, context string) string {
+	file, err := os.Open(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	var sb strings.Builder
+	scanner := bufio.NewScanner(file)
+	i := -1 //TODO: fix this
+	for scanner.Scan() {
+		i++
+		if scanner.Text() == "" {
+			continue
+		}
+		fmt.Println(context, scanner.Text())
+		if strings.Contains(scanner.Text(), context) {
+			sb.WriteString("(" + strconv.Itoa(i) + ") " + scanner.Text() + "\n")
+		}
 	}
 
 	if err := scanner.Err(); err != nil {
