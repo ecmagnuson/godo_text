@@ -49,8 +49,8 @@ func ReadFile(path string) string {
 	return sb.String()
 }
 
-//ReadContexts returns a string array of the contexts in a given file.
-func ReadContexts(path string) string {
+//GetContexts returns a string array of the contexts present in a given file.
+func GetContexts(path string) string {
 	var contexts []string
 	var todos string = ReadFile(TodoPath("todo.txt"))
 	scanner := bufio.NewScanner(strings.NewReader(todos))
@@ -64,7 +64,7 @@ func ReadContexts(path string) string {
 	return strings.Join(contexts, " ")
 }
 
-//WriteFile writes text to a file
+//WriteFile writes text to a file.
 func WriteFile(filePath string, text []string) {
 	f, err := os.OpenFile(filePath, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {

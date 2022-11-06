@@ -14,7 +14,7 @@ var lscCmd = &cobra.Command{
 	Long:  "list contexts",
 	Run: func(cmd *cobra.Command, args []string) {
 		var todoFile string = utils.TodoPath("todo.txt")
-		fmt.Println(utils.ReadContexts(todoFile))
+		fmt.Println(utils.GetContexts(todoFile))
 	},
 }
 
