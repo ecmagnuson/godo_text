@@ -68,7 +68,6 @@ func ReadContext(path string, context string) string {
 		if scanner.Text() == "" {
 			continue
 		}
-		fmt.Println(context, scanner.Text())
 		if strings.Contains(scanner.Text(), context) {
 			sb.WriteString("(" + strconv.Itoa(i) + ") " + scanner.Text() + "\n")
 		}
