@@ -132,3 +132,20 @@ func WriteFile(filePath string, text []string) {
 		}
 	}
 }
+
+//Do moves the id (line) in todo.txt to done.txt
+func Do(ids []int) {
+	var todos string = ReadFile(TodoPath("todo.txt"))
+	var todoList []string
+	//convert todos to an array of strings per line?
+	scanner := bufio.NewScanner(strings.NewReader(todos))
+	for scanner.Scan() {
+		todoList = append(todoList, scanner.Text())
+	}
+	var done []int
+	for i := 0; i < len(todos); i++ {
+		if slices.Contains(ids, i) {
+
+		}
+	}
+}
