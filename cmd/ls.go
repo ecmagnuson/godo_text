@@ -16,9 +16,9 @@ var lsCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		var todoFile string = utils.TodoPath("todo.txt")
 		if len(args) == 0 {
-			fmt.Println(utils.ReadFile(todoFile))
+			fmt.Println(utils.ReadFile(todoFile, ""))
 		} else {
-			fmt.Println(utils.ReadContext(todoFile, strings.Join(args, " ")))
+			fmt.Println(utils.ReadFile(todoFile, strings.Join(args, " ")))
 		}
 	},
 }

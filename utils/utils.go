@@ -12,6 +12,11 @@ import (
 	"golang.org/x/exp/slices"
 )
 
+//TODO
+//When adding to todo.txt need to only append
+//Same with done.txt
+//when using Do want to fully rewrite everything
+
 //TodoPath returns the string path (OS agnostic) of the
 //todo.txt or done.txt in home/.todo/ dir.
 func TodoPath(txtFile string) string {
@@ -24,8 +29,9 @@ func TodoPath(txtFile string) string {
 	return filepath.Join(homeDir, ".todo", txtFile)
 }
 
-//ReadFile returns a string of all of the contents of a file given its path.
-func ReadFile(path string) string {
+//ReadFile returns a string of all of the contents of a file given its path if no context is given.
+//If there is a context given it will return only the lines with that context.
+func ReadFile(path string, context string) string {
 	file, err := os.Open(path)
 	if err != nil {
 		log.Fatal(err)
@@ -34,40 +40,15 @@ func ReadFile(path string) string {
 
 	var sb strings.Builder
 	scanner := bufio.NewScanner(file)
-	i := -1 //TODO: fix this
+	i := 1
 	for scanner.Scan() {
-		i++
-		if scanner.Text() == "" {
+		if strings.TrimSuffix(scanner.Text(), " \r\n") == "" {
 			continue
 		}
-		sb.WriteString("(" + strconv.Itoa(i) + ") " + scanner.Text() + "\n")
-	}
-
-	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
-	}
-	return sb.String()
-}
-
-//ReadContext reads only specific contexts from a file.
-func ReadContext(path string, context string) string {
-	file, err := os.Open(path)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-
-	var sb strings.Builder
-	scanner := bufio.NewScanner(file)
-	i := -1 //TODO: fix this
-	for scanner.Scan() {
-		i++
-		if scanner.Text() == "" {
-			continue
-		}
-		if strings.Contains(scanner.Text(), context) {
+		if (len(context)) == 0 || strings.Contains(scanner.Text(), context) {
 			sb.WriteString("(" + strconv.Itoa(i) + ") " + scanner.Text() + "\n")
 		}
+		i++
 	}
 
 	if err := scanner.Err(); err != nil {
@@ -76,10 +57,10 @@ func ReadContext(path string, context string) string {
 	return sb.String()
 }
 
-//GetContexts returns a string array of the contexts present in a given file.
+//GetContexts returns a string of the contexts present in a given file.
 func GetContexts(path string) string {
 	var contexts []string
-	var todos string = ReadFile(TodoPath("todo.txt"))
+	var todos string = ReadFile(TodoPath("todo.txt"), "")
 	scanner := bufio.NewScanner(strings.NewReader(todos))
 	for scanner.Scan() {
 		var line string = scanner.Text()
@@ -95,7 +76,7 @@ func hasContext(text string) bool {
 	return strings.Contains(text, "@")
 }
 
-//WriteFile writes text to a file.
+//WriteFile appends text to a file.
 func WriteFile(filePath string, text []string) {
 	f, err := os.OpenFile(filePath, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
@@ -106,7 +87,8 @@ func WriteFile(filePath string, text []string) {
 
 	if len(text) > 0 {
 		if !hasContext(strings.Join(text, " ")) {
-			log.Fatal("todo item must have context.")
+			fmt.Print(text)
+			log.Fatal("todo item must have context. It didnt")
 		}
 		if _, err = f.WriteString(strings.Join(text, " ") + "\n"); err != nil {
 			panic(err)
@@ -135,17 +117,26 @@ func WriteFile(filePath string, text []string) {
 
 //Do moves the id (line) in todo.txt to done.txt
 func Do(ids []int) {
-	var todos string = ReadFile(TodoPath("todo.txt"))
-	var todoList []string
+	var todoString string = ReadFile(TodoPath("todo.txt"), "")
+	var todos []string
 	//convert todos to an array of strings per line?
-	scanner := bufio.NewScanner(strings.NewReader(todos))
+	scanner := bufio.NewScanner(strings.NewReader(todoString))
 	for scanner.Scan() {
-		todoList = append(todoList, scanner.Text())
+		todos = append(todos, scanner.Text())
 	}
-	var done []int
-	for i := 0; i < len(todos); i++ {
-		if slices.Contains(ids, i) {
 
+	//I have a []string - todos - of all of the things todo
+	//The parameter ids []int is all of the items I want to do
+
+	//I need to get a list of all of the things in ids that are in todos
+
+	var done []string
+
+	for i := 0; i < len(todos); i++ {
+		if slices.Contains(ids, i) && todos[i] != "" {
+			todos[i] = strings.TrimSuffix(todos[i], " \r\n")
+			done = append(done, todos[i-1]) //This is a BUG workaround.
 		}
 	}
+	fmt.Println(done)
 }
