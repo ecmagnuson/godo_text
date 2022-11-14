@@ -2,7 +2,9 @@ package utils
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -18,7 +20,7 @@ import (
 //when using Do want to fully rewrite everything
 
 //TodoPath returns the string path (OS agnostic) of the
-//todo.txt or done.txt in home/.todo/ dir.
+//todo.txt or done.txt in $HOME/.todo/ dir.
 func TodoPath(txtFile string) string {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
@@ -42,9 +44,13 @@ func ReadFile(path string, context string) string {
 	scanner := bufio.NewScanner(file)
 	i := 1
 	for scanner.Scan() {
+		//ignore empty lines. \r is Windows NT carriage return.
 		if strings.TrimSuffix(scanner.Text(), " \r\n") == "" {
 			continue
 		}
+		//if no context given return everything (ls)
+		//or
+		//if context given return only lines with context (ls @home)
 		if (len(context)) == 0 || strings.Contains(scanner.Text(), context) {
 			sb.WriteString("(" + strconv.Itoa(i) + ") " + scanner.Text() + "\n")
 		}
@@ -57,7 +63,7 @@ func ReadFile(path string, context string) string {
 	return sb.String()
 }
 
-//GetContexts returns a string of the contexts present in a given file.
+//GetContexts returns a string of all contexts present in a given file.
 func GetContexts(path string) string {
 	var contexts []string
 	var todos string = ReadFile(TodoPath("todo.txt"), "")
@@ -72,8 +78,33 @@ func GetContexts(path string) string {
 	return strings.Join(contexts, " ")
 }
 
+//hasContext checks that text contains a context (@)
 func hasContext(text string) bool {
 	return strings.Contains(text, "@")
+}
+
+//getNumLines returns the number of lines being used in todo.txt file.
+//https://stackoverflow.com/questions/24562942/golang-how-do-i-determine-the-number-of-lines-in-a-file-efficiently
+func getNumLines() (int, error) {
+
+	r := strings.NewReader(ReadFile(TodoPath("todo.txt"), ""))
+
+	buf := make([]byte, 32*1024)
+	count := 0
+	lineSep := []byte{'\n'}
+
+	for {
+		c, err := r.Read(buf)
+		count += bytes.Count(buf[:c], lineSep)
+
+		switch {
+		case err == io.EOF:
+			return count, nil
+
+		case err != nil:
+			return count, err
+		}
+	}
 }
 
 //WriteFile appends text to a file.
@@ -115,12 +146,12 @@ func WriteFile(filePath string, text []string) {
 	}
 }
 
-//Do moves the id (line) in todo.txt to done.txt
+//Do moves the id (line) in todo.txt to done.txt and rewrites the line in todo.txt to ""
 func Do(ids []int) {
-	var todoString string = ReadFile(TodoPath("todo.txt"), "")
+	var stringOfTodos string = ReadFile(TodoPath("todo.txt"), "")
 	var todos []string
 	//convert todos to an array of strings per line?
-	scanner := bufio.NewScanner(strings.NewReader(todoString))
+	scanner := bufio.NewScanner(strings.NewReader(stringOfTodos))
 	for scanner.Scan() {
 		todos = append(todos, scanner.Text())
 	}
@@ -132,11 +163,30 @@ func Do(ids []int) {
 
 	var done []string
 
-	for i := 0; i < len(todos); i++ {
+	ids = []int{3}
+
+	fmt.Println(getNumLines())
+	//A bit hacky, should figure our a more elegent way for this
+	/* 	i := 1
+	   	for i < len(todos) {
+	   		fmt.Println(i)
+	   		if slices.Contains(ids, i) && todos[i] != "" {
+	   			todos[i] = strings.TrimSuffix(todos[i], " \r\n")
+	   			done = append(done, todos[i-1])
+	   		}
+	   		i++
+	   	} */
+
+	/* 	for i := 1; i < len(todos); i++ {
 		if slices.Contains(ids, i) && todos[i] != "" {
 			todos[i] = strings.TrimSuffix(todos[i], " \r\n")
-			done = append(done, todos[i-1]) //This is a BUG workaround.
+			done = append(done, todos[i-1])
 		}
-	}
+	} */
+
+	fmt.Println("Todos are:")
+	fmt.Println(todos)
+	fmt.Println()
+	fmt.Println("Done is:")
 	fmt.Println(done)
 }

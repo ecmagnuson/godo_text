@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"fmt"
 	"godo/utils"
+	"strconv"
 
 	"github.com/spf13/cobra"
 )
@@ -18,9 +18,15 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println(args)
-		fmt.Println()
 		var ids []int
+
+		for _, i := range args {
+			id, err := strconv.Atoi(i)
+			if err != nil {
+				panic(err)
+			}
+			ids = append(ids, id)
+		}
 		utils.Do(ids)
 	},
 }
