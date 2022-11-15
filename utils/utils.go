@@ -116,12 +116,14 @@ func WriteFile(filePath string, text []string) {
 
 	defer f.Close()
 
+	numLines, err := getNumLines()
+
 	if len(text) > 0 {
 		if !hasContext(strings.Join(text, " ")) {
 			fmt.Print(text)
 			log.Fatal("todo item must have context. It didnt")
 		}
-		if _, err = f.WriteString(strings.Join(text, " ") + "\n"); err != nil {
+		if _, err = f.WriteString("(" + strconv.Itoa(numLines+1) + ") " + strings.Join(text, " ") + "\n"); err != nil {
 			panic(err)
 		}
 	} else {
@@ -139,7 +141,7 @@ func WriteFile(filePath string, text []string) {
 			text = append(text, next)
 		}
 		for i := 0; i < len(text); i++ {
-			if _, err = f.WriteString(text[i]); err != nil {
+			if _, err = f.WriteString("(" + strconv.Itoa(numLines+1+i) + ") " + text[i]); err != nil {
 				panic(err)
 			}
 		}
