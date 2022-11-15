@@ -144,7 +144,7 @@ func WriteFile(filePath string, text []string) {
 		for {
 			fmt.Print("> ")
 			next, _ := reader.ReadString('\n')
-			if next == "\n" {
+			if strings.TrimSuffix(next, "\n") == "" {
 				break
 			}
 			if !hasContext(next) {
@@ -171,7 +171,7 @@ func getID(s string) int {
 			return ID
 		}
 	}
-	panic("getID can't find an ID in a todo item")
+	return -1 //Invalid ID
 }
 
 //Do moves the id (line) in todo.txt to done.txt and rewrites the line in todo.txt to ""
@@ -194,15 +194,21 @@ func Do(ids []int) {
 
 	var done []string
 
+	fmt.Println("todos before: ")
+	fmt.Println(todos)
+
 	i := 0
 	for i < len(todos) {
 		if slices.Contains(ids, getID(todos[i])) {
 			todos[i] = strings.TrimSuffix(todos[i], " \r\n")
-			done = append(done, strings.TrimLeft(todos[i]+"\n", " ")) //add the todo item to done slice
-			todos[i] = ""                                             //"remove" the todo item
+			done = append(done, todos[i]) //add the todo item to done slice
+			todos[i] = ""                 //"remove" the todo item
 		}
 		i++
 	}
+
+	fmt.Println("todos after: ")
+	fmt.Println(todos)
 
 	//Add the done values to the done.txt
 	WriteFile(TodoDir("done.txt"), done)
@@ -219,6 +225,7 @@ func Do(ids []int) {
 
 //RewriteFile will write over a file with new text
 func RewriteFile(file string, text []string) {
+
 	f, err := os.Create(file)
 	if err != nil {
 		panic(err)
@@ -226,7 +233,7 @@ func RewriteFile(file string, text []string) {
 	defer f.Close()
 
 	for _, line := range text {
-		if _, err = f.WriteString(line); err != nil {
+		if _, err = f.WriteString(line + "\n"); err != nil {
 			panic(err)
 		}
 	}
