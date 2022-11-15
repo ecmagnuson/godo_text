@@ -51,7 +51,7 @@ func ReadFile(path string, context string) string {
 	i := 1
 	for scanner.Scan() {
 		//ignore empty lines. \r is Windows NT carriage return.
-		if strings.TrimSuffix(scanner.Text(), " \r\n") == "" {
+		if scanner.Text() == " " { //strings.TrimSuffix(scanner.Text(), " \r\n")
 			continue
 		}
 		//if no context given return everything (ls)
