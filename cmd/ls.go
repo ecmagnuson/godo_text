@@ -14,7 +14,7 @@ var lsCmd = &cobra.Command{
 	Short: "list out all items in todo.txt",
 	Long:  "list out all items in todo.txt",
 	Run: func(cmd *cobra.Command, args []string) {
-		var todoFile string = utils.TodoPath("todo.txt")
+		var todoFile string = utils.TodoDir("todo.txt")
 		if len(args) == 0 {
 			fmt.Println(utils.ReadFile(todoFile, ""))
 		} else {

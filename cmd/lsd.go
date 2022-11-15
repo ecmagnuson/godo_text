@@ -17,7 +17,7 @@ var lsdCmd = &cobra.Command{
 	Short: "list items in done.txt",
 	Long:  "list items in done.txt",
 	Run: func(cmd *cobra.Command, args []string) {
-		var todoFile string = utils.TodoPath("done.txt")
+		var todoFile string = utils.TodoDir("done.txt")
 		fmt.Println(utils.ReadFile(todoFile, ""))
 	},
 }

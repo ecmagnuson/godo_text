@@ -12,7 +12,7 @@ var addCmd = &cobra.Command{
 	Short: "add text to todo.txt",
 	Long:  "add text to todo.txt",
 	Run: func(cmd *cobra.Command, args []string) {
-		utils.WriteFile(utils.TodoPath("todo.txt"), args)
+		utils.WriteFile(utils.TodoDir("todo.txt"), args)
 	},
 }
 
