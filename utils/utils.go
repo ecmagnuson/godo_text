@@ -52,7 +52,7 @@ func ReadFile(path string, context string) string {
 		//or
 		//if context given return only lines with context (ls @home)
 		if (len(context)) == 0 || strings.Contains(scanner.Text(), context) {
-			sb.WriteString("(" + strconv.Itoa(i) + ") " + scanner.Text() + "\n")
+			sb.WriteString(scanner.Text() + "\n")
 		}
 		i++
 	}
@@ -83,9 +83,9 @@ func hasContext(text string) bool {
 	return strings.Contains(text, "@")
 }
 
-//getNumLines returns the number of lines being used in todo.txt file.
+//getNumLinesTodo returns the number of lines being used in todo.txt file.
 //https://stackoverflow.com/questions/24562942/golang-how-do-i-determine-the-number-of-lines-in-a-file-efficiently
-func getNumLines() (int, error) {
+func getNumLinesTodo() (int, error) {
 
 	r := strings.NewReader(ReadFile(TodoPath("todo.txt"), ""))
 
@@ -113,10 +113,9 @@ func WriteFile(filePath string, text []string) {
 	if err != nil {
 		panic(err)
 	}
-
 	defer f.Close()
 
-	numLines, err := getNumLines()
+	numLines, err := getNumLinesTodo()
 
 	if len(text) > 0 {
 		if !hasContext(strings.Join(text, " ")) {
@@ -167,17 +166,12 @@ func Do(ids []int) {
 
 	ids = []int{3}
 
-	fmt.Println(getNumLines())
+	fmt.Println(getNumLinesTodo())
 	//A bit hacky, should figure our a more elegent way for this
-	/* 	i := 1
-	   	for i < len(todos) {
-	   		fmt.Println(i)
-	   		if slices.Contains(ids, i) && todos[i] != "" {
-	   			todos[i] = strings.TrimSuffix(todos[i], " \r\n")
-	   			done = append(done, todos[i-1])
-	   		}
-	   		i++
-	   	} */
+	i := 1
+	for i < len(todos) {
+		fmt.Println(todos[i])
+	}
 
 	/* 	for i := 1; i < len(todos); i++ {
 		if slices.Contains(ids, i) && todos[i] != "" {
