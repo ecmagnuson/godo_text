@@ -19,9 +19,15 @@ import (
 //Same with done.txt
 //when using Do want to fully rewrite everything
 
-//TodoPath returns the string path (OS agnostic) of the
+//TODO
+//setup creates todo.txt and done.txt inside of .todo dir in user $HOME
+func setup() {
+
+}
+
+//TodoDir returns the string path (OS agnostic) of the
 //todo.txt or done.txt in $HOME/.todo/ dir.
-func TodoPath(txtFile string) string {
+func TodoDir(txtFile string) string {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
 		log.Fatal(err)
@@ -66,7 +72,7 @@ func ReadFile(path string, context string) string {
 //GetContexts returns a string of all contexts present in a given file.
 func GetContexts(path string) string {
 	var contexts []string
-	var todos string = ReadFile(TodoPath("todo.txt"), "")
+	var todos string = ReadFile(TodoDir("todo.txt"), "")
 	scanner := bufio.NewScanner(strings.NewReader(todos))
 	for scanner.Scan() {
 		var line string = scanner.Text()
@@ -87,7 +93,7 @@ func hasContext(text string) bool {
 //https://stackoverflow.com/questions/24562942/golang-how-do-i-determine-the-number-of-lines-in-a-file-efficiently
 func getNumLinesTodo() (int, error) {
 
-	r := strings.NewReader(ReadFile(TodoPath("todo.txt"), ""))
+	r := strings.NewReader(ReadFile(TodoDir("todo.txt"), ""))
 
 	buf := make([]byte, 32*1024)
 	count := 0
@@ -122,8 +128,16 @@ func WriteFile(filePath string, text []string) {
 			fmt.Print(text)
 			log.Fatal("todo item must have context. It didnt")
 		}
-		if _, err = f.WriteString("(" + strconv.Itoa(numLines+1) + ") " + strings.Join(text, " ") + "\n"); err != nil {
-			panic(err)
+
+		//no ID written to it yet
+		if getID(strings.Join(text, " ")) == -1 {
+			if _, err = f.WriteString("(" + strconv.Itoa(numLines+1) + ") " + strings.Join(text, " ") + "\n"); err != nil {
+				panic(err)
+			}
+		} else { //already has ID, dont need to add it
+			if _, err = f.WriteString(strings.Join(text, " ") + "\n"); err != nil {
+				panic(err)
+			}
 		}
 	} else {
 		reader := bufio.NewReader(os.Stdin)
@@ -147,6 +161,10 @@ func WriteFile(filePath string, text []string) {
 	}
 }
 
+func hasID(s string) bool {
+	return false
+}
+
 //getID gets the ID between two parenthesis of a todo item
 func getID(s string) int {
 	i := strings.Index(s, "(")
@@ -162,7 +180,15 @@ func getID(s string) int {
 
 //Do moves the id (line) in todo.txt to done.txt and rewrites the line in todo.txt to ""
 func Do(ids []int) {
-	var stringOfTodos string = ReadFile(TodoPath("todo.txt"), "")
+
+	numLines, _ := getNumLinesTodo()
+	for _, id := range ids {
+		if id > numLines {
+			panic("Cant do an item that doesnt exist. The ID is larger than the number of lines.")
+		}
+	}
+
+	var stringOfTodos string = ReadFile(TodoDir("todo.txt"), "")
 	var todos []string
 	//convert todos to an array of strings per line?
 	scanner := bufio.NewScanner(strings.NewReader(stringOfTodos))
@@ -170,27 +196,22 @@ func Do(ids []int) {
 		todos = append(todos, scanner.Text())
 	}
 
-	//I have a []string - todos - of all of the things todo
-	//The parameter ids []int is all of the items I want to do
-
-	//I need to get a list of all of the things in ids that are in todos
-
 	var done []string
 
 	i := 0
 	for i < len(todos) {
 		if slices.Contains(ids, getID(todos[i])) {
-			fmt.Println(todos[i])
+			todos[i] = strings.TrimSuffix(todos[i], " \r\n")
+			done = append(done, strings.TrimLeft(todos[i]+"\n", " ")) //add the todo item to done slice
+			todos[i] = ""                                             //remove the todo item
 		}
 		i++
 	}
 
-	/* 	for i := 1; i < len(todos); i++ {
-		if slices.Contains(ids, i) && todos[i] != "" {
-			todos[i] = strings.TrimSuffix(todos[i], " \r\n")
-			done = append(done, todos[i-1])
-		}
-	} */
+	//Add the done values to the done.txt
+	WriteFile(TodoDir("done.txt"), done)
+
+	//rewrite to the todo.txt file with the removed lines.
 
 	fmt.Println()
 	fmt.Println("Todos are:")
