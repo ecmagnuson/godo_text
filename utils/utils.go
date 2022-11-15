@@ -147,6 +147,19 @@ func WriteFile(filePath string, text []string) {
 	}
 }
 
+//getID gets the ID between two parenthesis of a todo item
+func getID(s string) int {
+	i := strings.Index(s, "(")
+	if i >= 0 {
+		j := strings.Index(s, ")")
+		if j >= 0 {
+			ID, _ := strconv.Atoi(s[i+1 : j])
+			return ID
+		}
+	}
+	panic("getID can't find an ID in a todo item")
+}
+
 //Do moves the id (line) in todo.txt to done.txt and rewrites the line in todo.txt to ""
 func Do(ids []int) {
 	var stringOfTodos string = ReadFile(TodoPath("todo.txt"), "")
@@ -164,13 +177,12 @@ func Do(ids []int) {
 
 	var done []string
 
-	ids = []int{3}
-
-	fmt.Println(getNumLinesTodo())
-	//A bit hacky, should figure our a more elegent way for this
-	i := 1
+	i := 0
 	for i < len(todos) {
-		fmt.Println(todos[i])
+		if slices.Contains(ids, getID(todos[i])) {
+			fmt.Println(todos[i])
+		}
+		i++
 	}
 
 	/* 	for i := 1; i < len(todos); i++ {
@@ -180,6 +192,7 @@ func Do(ids []int) {
 		}
 	} */
 
+	fmt.Println()
 	fmt.Println("Todos are:")
 	fmt.Println(todos)
 	fmt.Println()
