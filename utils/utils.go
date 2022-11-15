@@ -135,8 +135,11 @@ func WriteFile(filePath string, text []string) {
 				panic(err)
 			}
 		} else { //already has ID, dont need to add it
-			if _, err = f.WriteString(strings.Join(text, " ") + "\n"); err != nil {
-				panic(err)
+			fmt.Println("This is where it is writing :D")
+			for _, line := range text {
+				if _, err = f.WriteString(line + "\n"); err != nil {
+					panic(err)
+				}
 			}
 		}
 	} else {
@@ -144,7 +147,7 @@ func WriteFile(filePath string, text []string) {
 		for {
 			fmt.Print("> ")
 			next, _ := reader.ReadString('\n')
-			if strings.TrimSuffix(next, "\n") == "" {
+			if next == "\n" { //strings.TrimSuffix(next, "\n")
 				break
 			}
 			if !hasContext(next) {
@@ -202,7 +205,7 @@ func Do(ids []int) {
 		if slices.Contains(ids, getID(todos[i])) {
 			todos[i] = strings.TrimSuffix(todos[i], " \r\n")
 			done = append(done, todos[i]) //add the todo item to done slice
-			todos[i] = ""                 //"remove" the todo item
+			todos[i] = " "                //"remove" the todo item
 		}
 		i++
 	}
