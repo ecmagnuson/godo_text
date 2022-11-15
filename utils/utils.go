@@ -15,11 +15,6 @@ import (
 )
 
 //TODO
-//When adding to todo.txt need to only append
-//Same with done.txt
-//when using Do want to fully rewrite everything
-
-//TODO
 //setup creates todo.txt and done.txt inside of .todo dir in user $HOME
 func setup() {
 
@@ -50,8 +45,7 @@ func ReadFile(path string, context string) string {
 	scanner := bufio.NewScanner(file)
 	i := 1
 	for scanner.Scan() {
-		//ignore empty lines. \r is Windows NT carriage return.
-		if scanner.Text() == " " { //strings.TrimSuffix(scanner.Text(), " \r\n")
+		if scanner.Text() == " " {
 			continue
 		}
 		//if no context given return everything (ls)
@@ -135,7 +129,6 @@ func WriteFile(filePath string, text []string) {
 				panic(err)
 			}
 		} else { //already has ID, dont need to add it
-			fmt.Println("This is where it is writing :D")
 			for _, line := range text {
 				if _, err = f.WriteString(line + "\n"); err != nil {
 					panic(err)
@@ -147,7 +140,7 @@ func WriteFile(filePath string, text []string) {
 		for {
 			fmt.Print("> ")
 			next, _ := reader.ReadString('\n')
-			if next == "\n" { //strings.TrimSuffix(next, "\n")
+			if next == "\n" {
 				break
 			}
 			if !hasContext(next) {
@@ -197,9 +190,6 @@ func Do(ids []int) {
 
 	var done []string
 
-	fmt.Println("todos before: ")
-	fmt.Println(todos)
-
 	i := 0
 	for i < len(todos) {
 		if slices.Contains(ids, getID(todos[i])) {
@@ -210,20 +200,10 @@ func Do(ids []int) {
 		i++
 	}
 
-	fmt.Println("todos after: ")
-	fmt.Println(todos)
-
 	//Add the done values to the done.txt
 	WriteFile(TodoDir("done.txt"), done)
 	//rewrite to the todo.txt file with the removed lines.
 	RewriteFile(TodoDir("todo.txt"), todos)
-
-	/* 	fmt.Println()
-	   	fmt.Println("Todos are:")
-	   	fmt.Println(todos)
-	   	fmt.Println()
-	   	fmt.Println("Done is:")
-	   	fmt.Println(done) */
 }
 
 //RewriteFile will write over a file with new text
