@@ -121,7 +121,7 @@ func WriteFile(filePath string, text []string) {
 	}
 	defer f.Close()
 
-	numLines, err := getNumLinesTodo()
+	numLines, _ := getNumLinesTodo()
 
 	if len(text) > 0 {
 		if !hasContext(strings.Join(text, " ")) {
@@ -159,10 +159,6 @@ func WriteFile(filePath string, text []string) {
 			}
 		}
 	}
-}
-
-func hasID(s string) bool {
-	return false
 }
 
 //getID gets the ID between two parenthesis of a todo item
@@ -203,20 +199,35 @@ func Do(ids []int) {
 		if slices.Contains(ids, getID(todos[i])) {
 			todos[i] = strings.TrimSuffix(todos[i], " \r\n")
 			done = append(done, strings.TrimLeft(todos[i]+"\n", " ")) //add the todo item to done slice
-			todos[i] = ""                                             //remove the todo item
+			todos[i] = ""                                             //"remove" the todo item
 		}
 		i++
 	}
 
 	//Add the done values to the done.txt
 	WriteFile(TodoDir("done.txt"), done)
-
 	//rewrite to the todo.txt file with the removed lines.
+	RewriteFile(TodoDir("todo.txt"), todos)
 
-	fmt.Println()
-	fmt.Println("Todos are:")
-	fmt.Println(todos)
-	fmt.Println()
-	fmt.Println("Done is:")
-	fmt.Println(done)
+	/* 	fmt.Println()
+	   	fmt.Println("Todos are:")
+	   	fmt.Println(todos)
+	   	fmt.Println()
+	   	fmt.Println("Done is:")
+	   	fmt.Println(done) */
+}
+
+//RewriteFile will write over a file with new text
+func RewriteFile(file string, text []string) {
+	f, err := os.Create(file)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+
+	for _, line := range text {
+		if _, err = f.WriteString(line); err != nil {
+			panic(err)
+		}
+	}
 }
