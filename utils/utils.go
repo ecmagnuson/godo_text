@@ -184,7 +184,7 @@ func Do(ids []int) {
 		}
 	}
 
-	var stringOfTodos string = ReadFile(TodoDir("todo.txt"), "")
+	var stringOfTodos string = ReadAllLinesFromFile(TodoDir("todo.txt"))
 	var todos []string
 	//convert todos to an array of strings per line?
 	scanner := bufio.NewScanner(strings.NewReader(stringOfTodos))
@@ -237,4 +237,27 @@ func RewriteFile(file string, text []string) {
 			panic(err)
 		}
 	}
+
+}
+
+//ReadAllLinesFromFile returns all lines, even empty ones, from a file
+func ReadAllLinesFromFile(path string) string {
+	file, err := os.Open(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	var sb strings.Builder
+	scanner := bufio.NewScanner(file)
+	i := 1
+	for scanner.Scan() {
+		sb.WriteString(scanner.Text() + "\n")
+		i++
+	}
+
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
+	return sb.String()
 }
