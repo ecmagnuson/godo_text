@@ -1,32 +1,36 @@
 package utils
 
 import (
-	"os"
+	"log"
 	"testing"
 )
 
-func TestMain(m *testing.M) {
-	setup()
-	code := m.Run()
-	os.Exit(code)
-}
-
 //test non exported functions in utils.go
 
-func setup() (string, int) {
-	return "(8675309) something (8) @home", 8675309
+var cases = []struct {
+	s       string
+	want    int
+	context bool
+}{
+	{"(8675309) something (8) @home", 8675309, true},
+	{"(1) something (8) @home", 1, true},
+	{"(8675309) something (8)", 8675309, false},
 }
 
 func Test_getId(t *testing.T) {
-	s, want := setup()
-	if getID(s) != want {
-		t.Fatalf("getId failed to parse correct ID")
+	for _, c := range cases {
+		got := getID(c.s)
+		if got != c.want {
+			log.Fatalf("getID failed.")
+		}
 	}
 }
 
 func Test_hasContext(t *testing.T) {
-	s, _ := setup()
-	if !hasContext(s) {
-		t.Fatalf("hasContext failed to find a context when there was one")
+	for _, c := range cases {
+		got := hasContext(c.s)
+		if got != c.context {
+			log.Fatalf("hasContext failed.")
+		}
 	}
 }
