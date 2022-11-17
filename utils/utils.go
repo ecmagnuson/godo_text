@@ -14,10 +14,21 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-//setup creates todo.txt and done.txt inside of .todo dir in user $HOME
+//setup creates .todo dir in user home and puts todo.txt and done.txt inside of it
 func Setup() {
 	tdPath := TodoDir("todo.txt")
 	dPath := TodoDir("done.txt")
+
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	newpath := filepath.Join(homeDir, ".todo")
+	err = os.MkdirAll(newpath, os.ModePerm)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	td, err := os.Create(tdPath)
 	if err != nil {
