@@ -14,43 +14,6 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-//setup creates .todo dir in user home and puts todo.txt and done.txt inside of it
-func Setup() {
-	todoPath := TodoDir("todo.txt")
-	donePath := TodoDir("done.txt")
-
-	var dirs []struct {
-		name string
-	}{
-		{}
-	}
-
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	newpath := filepath.Join(homeDir, ".todo")
-
-	err = os.MkdirAll(newpath, os.ModePerm)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	td, err := os.Create(todoPath)
-	if err != nil {
-		panic(err)
-	}
-
-	d, err := os.Create(donePath)
-	if err != nil {
-		panic(err)
-	}
-
-	defer td.Close()
-	defer d.Close()
-}
-
 //TodoDir returns the string path (OS agnostic) of the
 //todo.txt or done.txt in $HOME/.todo/ dir.
 func TodoDir(txtFile string) string {
@@ -92,21 +55,6 @@ func ReadFile(path string, context string) string {
 		log.Fatal(err)
 	}
 	return sb.String()
-}
-
-//GetContexts returns a string of all contexts present in a given file.
-func GetContexts(path string) string {
-	var contexts []string
-	var todos string = ReadFile(TodoDir("todo.txt"), "")
-	scanner := bufio.NewScanner(strings.NewReader(todos))
-	for scanner.Scan() {
-		var line string = scanner.Text()
-		line = line[strings.IndexByte(line, '@'):]
-		if !slices.Contains(contexts, line) {
-			contexts = append(contexts, line)
-		}
-	}
-	return strings.Join(contexts, " ")
 }
 
 //hasContext checks that text contains a context (@)
