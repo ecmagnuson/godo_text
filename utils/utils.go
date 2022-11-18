@@ -16,8 +16,14 @@ import (
 
 //setup creates .todo dir in user home and puts todo.txt and done.txt inside of it
 func Setup() {
-	tdPath := TodoDir("todo.txt")
-	dPath := TodoDir("done.txt")
+	todoPath := TodoDir("todo.txt")
+	donePath := TodoDir("done.txt")
+
+	var dirs []struct {
+		name string
+	}{
+		{}
+	}
 
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
@@ -25,17 +31,18 @@ func Setup() {
 	}
 
 	newpath := filepath.Join(homeDir, ".todo")
+
 	err = os.MkdirAll(newpath, os.ModePerm)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	td, err := os.Create(tdPath)
+	td, err := os.Create(todoPath)
 	if err != nil {
 		panic(err)
 	}
 
-	d, err := os.Create(dPath)
+	d, err := os.Create(donePath)
 	if err != nil {
 		panic(err)
 	}
